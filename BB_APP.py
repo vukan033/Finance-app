@@ -152,31 +152,35 @@ if show_state:
 # CATEGORY BUDGET (FIXED MATCH)
 # =========================
 
-st.subheader("Preostalo po kategorijama")
+show_categories = st.toggle("📂 Prikaži preostalo po kategorijama")
 
-limits = {
-    "neophodni": income * 0.5,
-    "ekstravagantni": income * 0.1,
-    "pokloni": income * 0.1,
-    "edukacija": income * 0.1
-}
+if show_categories:
 
-spent = {k: 0 for k in limits}
+    st.subheader("Preostalo po kategorijama")
 
-for t in current:
-    if t["type"] == "expense":
-        cat = t.get("category", "").strip().lower()
-        if cat in spent:
-            spent[cat] += t["amount"]
+    limits = {
+        "neophodni": income * 0.5,
+        "ekstravagantni": income * 0.1,
+        "pokloni": income * 0.1,
+        "edukacija": income * 0.1
+    }
 
-remaining = {k: limits[k] - spent[k] for k in limits}
+    spent = {k: 0 for k in limits}
 
-c1, c2, c3, c4 = st.columns(4)
+    for t in current:
+        if t["type"] == "expense":
+            cat = t.get("category", "").strip().lower()
+            if cat in spent:
+                spent[cat] += t["amount"]
 
-c1.metric("Neophodni", f"{remaining['neophodni']:,.2f}")
-c2.metric("Ekstravagantni", f"{remaining['ekstravagantni']:,.2f}")
-c3.metric("Pokloni", f"{remaining['pokloni']:,.2f}")
-c4.metric("Edukacija", f"{remaining['edukacija']:,.2f}")
+    remaining = {k: limits[k] - spent[k] for k in limits}
+
+    c1, c2, c3, c4 = st.columns(4)
+
+    c1.metric("Neophodni", f"{remaining['neophodni']:,.2f}")
+    c2.metric("Ekstravagantni", f"{remaining['ekstravagantni']:,.2f}")
+    c3.metric("Pokloni", f"{remaining['pokloni']:,.2f}")
+    c4.metric("Edukacija", f"{remaining['edukacija']:,.2f}")
 
 
 # =========================
