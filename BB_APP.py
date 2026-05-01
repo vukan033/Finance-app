@@ -147,7 +147,7 @@ if show_state:
     col3.metric("Budžet", f"{budget:,.2f}")
     col4.metric("Investirano", f"{invest:,.2f}")
 
-# =========================
+# # =========================
 # CATEGORY BUDGET
 # =========================
 
@@ -174,6 +174,7 @@ if show_categories:
 
     remaining = {k: limits[k] - spent[k] for k in limits}
 
+    # METRICS
     c1, c2, c3, c4 = st.columns(4)
 
     c1.metric("Neophodni", f"{remaining['neophodni']:,.2f}")
@@ -181,40 +182,47 @@ if show_categories:
     c3.metric("Pokloni", f"{remaining['pokloni']:,.2f}")
     c4.metric("Edukacija", f"{remaining['edukacija']:,.2f}")
 
-    st.subheader("📊 Graf preostalog po kategorijama")
+    st.subheader("📊 Budžet po kategorijama")
 
-    data = []
+    category_colors = {
+        "neophodni": "#1f77b4",
+        "ekstravagantni": "#e377c2",
+        "pokloni": "#f1c40f",
+        "edukacija": "#ff7f0e"
+    }
+
+    chart_data = []
 
     for k in limits:
-        data.append({
+        chart_data.append({
             "kategorija": k,
-            "status": "potroseno",
-            "vrednost": spent[k]
+            "tip": "preostalo",
+            "vrednost": max(remaining[k], 0),
+            "boja": category_colors[k]
         })
-        data.append({
+        chart_data.append({
             "kategorija": k,
-            "status": "preostalo",
-            "vrednost": remaining[k]
+            "tip": "potroseno",
+            "vrednost": min(spent[k], limits[k]),
+            "boja": "#e74c3c"
         })
 
-    df = pd.DataFrame(data)
+    df = pd.DataFrame(chart_data)
 
-    chart = alt.Chart(df).mark_arc(innerRadius=50).encode(
+    chart = alt.Chart(df).mark_arc(innerRadius=70).encode(
         theta="vrednost:Q",
         color=alt.Color(
-            "status:N",
+            "kategorija:N",
             scale=alt.Scale(
-                domain=["potroseno", "preostalo"],
-                range=["lightblue", "darkblue"]
-            )
+                domain=list(category_colors.keys()),
+                range=list(category_colors.values())
+            ),
+            legend=alt.Legend(title="Kategorije")
         ),
-        tooltip=["kategorija", "status", "vrednost"]
-    ).facet(
-        column="kategorija:N"
+        tooltip=["kategorija", "tip", "vrednost"]
     )
 
     st.altair_chart(chart, use_container_width=True)
-
 # =========================
 # ADD TRANSACTIONS
 # =========================
