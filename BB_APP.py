@@ -134,14 +134,18 @@ expense = sum(t["amount"] for t in current if t["type"] == "expense")
 budget = income * 0.8 - expense
 invest = income * 0.2
 
-st.subheader("📊 Stanje")
+show_state = st.toggle("📊 Prikaži stanje")
 
-col1, col2, col3, col4 = st.columns(4)
+if show_state:
 
-col1.metric("Priliv", f"{income:,.2f}")
-col2.metric("Odliv", f"{expense:,.2f}")
-col3.metric("Budžet", f"{budget:,.2f}")
-col4.metric("Investirano", f"{invest:,.2f}")
+    st.subheader("📊 Stanje")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    col1.metric("Priliv", f"{income:,.2f}")
+    col2.metric("Odliv", f"{expense:,.2f}")
+    col3.metric("Budžet", f"{budget:,.2f}")
+    col4.metric("Investirano", f"{invest:,.2f}")
 
 
 # =========================
