@@ -83,7 +83,7 @@ def get_month(dt):
 # LOAD DATA
 # =========================
 
-st.title("💳 Finance Dashboard")
+st.title("💳 BudgetBuddy")
 
 transactions = load_transactions()
 
