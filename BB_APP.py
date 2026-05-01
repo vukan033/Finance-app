@@ -2,6 +2,8 @@ import json
 import streamlit as st
 from datetime import datetime
 import uuid
+import pandas as pd
+import altair as alt
 
 st.set_page_config(page_title="Finance App PRO", layout="wide")
 
@@ -78,7 +80,6 @@ def get_month(dt):
         return f"{months[dt.month-1]} {dt.year}"
     return "Nepoznat mesec"
 
-
 # =========================
 # LOAD DATA
 # =========================
@@ -123,7 +124,6 @@ def safe_match(t):
 
 current = [t for t in transactions if safe_match(t)]
 
-
 # =========================
 # METRICS
 # =========================
@@ -147,9 +147,8 @@ if show_state:
     col3.metric("Budžet", f"{budget:,.2f}")
     col4.metric("Investirano", f"{invest:,.2f}")
 
-
 # =========================
-# CATEGORY BUDGET (FIXED MATCH)
+# CATEGORY BUDGET
 # =========================
 
 show_categories = st.toggle("📂 Prikaži preostalo po kategorijama")
@@ -182,6 +181,39 @@ if show_categories:
     c3.metric("Pokloni", f"{remaining['pokloni']:,.2f}")
     c4.metric("Edukacija", f"{remaining['edukacija']:,.2f}")
 
+    st.subheader("📊 Graf preostalog po kategorijama")
+
+    data = []
+
+    for k in limits:
+        data.append({
+            "kategorija": k,
+            "status": "potroseno",
+            "vrednost": spent[k]
+        })
+        data.append({
+            "kategorija": k,
+            "status": "preostalo",
+            "vrednost": remaining[k]
+        })
+
+    df = pd.DataFrame(data)
+
+    chart = alt.Chart(df).mark_arc(innerRadius=50).encode(
+        theta="vrednost:Q",
+        color=alt.Color(
+            "status:N",
+            scale=alt.Scale(
+                domain=["potroseno", "preostalo"],
+                range=["lightblue", "darkblue"]
+            )
+        ),
+        tooltip=["kategorija", "status", "vrednost"]
+    ).facet(
+        column="kategorija:N"
+    )
+
+    st.altair_chart(chart, use_container_width=True)
 
 # =========================
 # ADD TRANSACTIONS
@@ -237,9 +269,8 @@ with colB:
             save_transactions(transactions)
             st.rerun()
 
-
 # =========================
-# TRANSACTIONS LIST + DELETE
+# TRANSACTIONS LIST
 # =========================
 
 show = st.toggle("Prikaži transakcije")
@@ -248,7 +279,7 @@ if show:
 
     st.subheader("Transakcije")
 
-    for t in transactions:
+    for t in current:
 
         col1, col2, col3 = st.columns([0.8, 0.1, 0.1])
 
@@ -266,7 +297,6 @@ if show:
                 transactions = [x for x in transactions if x["id"] != t["id"]]
                 save_transactions(transactions)
                 st.rerun()
-
 
 # =========================
 # EDIT FORM
