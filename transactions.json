@@ -1,0 +1,66 @@
+[
+  {
+    "date": "01.05.2026",
+    "amount": 44325.0,
+    "type": "income",
+    "category": "passive",
+    "description": "Stipendija",
+    "id": "2be8c616-36b0-4a0f-b22e-f07136e905d9"
+  },
+  {
+    "date": "01.05.2026",
+    "amount": 4500.0,
+    "type": "income",
+    "category": "active",
+    "description": "EY praksa",
+    "id": "deae8da4-81d1-4c69-bff8-4178dcec51e6"
+  },
+  {
+    "date": "08.05.2026",
+    "amount": 4500.0,
+    "type": "income",
+    "category": "active",
+    "description": "EY praksa",
+    "id": "6f35f892-101e-4f88-bdd0-9c22f614f79c"
+  },
+  {
+    "date": "15.05.2026",
+    "amount": 4500.0,
+    "type": "income",
+    "category": "active",
+    "description": "EY praksa",
+    "id": "5164b6bb-5ae6-4a5b-9083-2ad7ce8b34d4"
+  },
+  {
+    "date": "22.05.2026",
+    "amount": 4500.0,
+    "type": "income",
+    "category": "active",
+    "description": "EY praksa",
+    "id": "e4ce3bca-5852-448d-990e-54d2d421edd8"
+  },
+  {
+    "id": "673ba6c0-9970-4fec-8521-b7e426ed3af3",
+    "date": "01.05.2026",
+    "amount": 450.0,
+    "type": "expense",
+    "category": "pokloni",
+    "description": "Cascavanje/kafic"
+  },
+  {
+    "id": "ebbb4f95-3c4b-4e20-8ae3-b580114b71fa",
+    "date": "01.05.2026",
+    "amount": 390.0,
+    "type": "expense",
+    "category": "neophodni",
+    "description": "Odrzavanje racuna Banka"
+  },
+  {
+    "id": "211fd3c7-49b2-4524-b462-ef2ce750bec7",
+    "date": "01.05.2026",
+    "amount": 370.0,
+    "type": "expense",
+    "category": "neophodni",
+    "description": "Cigare"
+  }
+]
