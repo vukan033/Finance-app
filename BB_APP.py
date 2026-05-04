@@ -100,7 +100,7 @@ def safe_match(t):
     return dt and get_month(dt) == selected_month
 
 # =========================
-# FILTER LOGIC (NEW UX)
+# FILTER LOGIC
 # =========================
 
 search = st.text_input("🔍 Pretraga (opis)", "")
@@ -124,12 +124,8 @@ current = [
 ]
 
 # =========================
-# INSIGHTS ENGINE (NEW)
+# INSIGHTS ENGINE (FIXED)
 # =========================
-
-income = sum(t["amount"] for t in current if t["type"] == "income")
-expense = sum(t["amount"] for t in current if t["type"] == "expense")
-balance = income - expense
 
 def normalize(text):
     return (text or "").lower()
@@ -139,24 +135,26 @@ expenses = [t for t in current if t["type"] == "expense"]
 keywords = ["kafic", "cigare", "hrana", "voda", "gorivo", "kafa"]
 
 category_totals = {}
-keyword_totals = {}
 
 for t in expenses:
     cat = t["category"].lower()
-    desc = normalize(t["description"])
-
     category_totals[cat] = category_totals.get(cat, 0) + t["amount"]
 
-    matched = None
+top_category = max(category_totals, key=category_totals.get) if category_totals else None
+
+# KLJUČNO: filtriranje po kategoriji
+keyword_totals = {}
+
+for t in expenses:
+    if not top_category or t["category"].lower() != top_category:
+        continue
+
+    desc = normalize(t["description"])
+
     for k in keywords:
         if k in desc:
-            matched = k
+            keyword_totals[k] = keyword_totals.get(k, 0) + t["amount"]
             break
-
-    if matched:
-        keyword_totals[matched] = keyword_totals.get(matched, 0) + t["amount"]
-
-top_category = max(category_totals, key=category_totals.get) if category_totals else None
 
 top_keyword = None
 top_keyword_value = 0
@@ -167,32 +165,26 @@ for k, v in keyword_totals.items():
         top_keyword_value = v
 
 # =========================
-# INSIGHTS BAR
+# INSIGHTS BAR (CLEAN)
 # =========================
-
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    st.metric("Priliv", f"{income:,.2f}")
-
-with col2:
-    st.metric("Odliv", f"{expense:,.2f}")
-
-with col3:
-    st.metric("Balance", f"{balance:,.2f}")
 
 st.caption(f"🏷 Najveća kategorija troška: {top_category if top_category else '-'}")
 
 if top_keyword:
-    pct = (top_keyword_value / expense * 100) if expense > 0 else 0
+    total_cat = category_totals.get(top_category, 0)
+    pct = (top_keyword_value / total_cat * 100) if total_cat > 0 else 0
+
     st.caption(
         f"🔥 Najviše trošiš na: {top_keyword} "
-        f"({top_keyword_value:,.0f} RSD | {pct:.1f}%)"
+        f"({top_keyword_value:,.0f} RSD | {pct:.1f}% kategorije)"
     )
 
 # =========================
-# METRICS (OLD SECTION KEPT)
+# METRICS (OSTALO NE DIRANO)
 # =========================
+
+income = sum(t["amount"] for t in current if t["type"] == "income")
+expense = sum(t["amount"] for t in current if t["type"] == "expense")
 
 budget = income * 0.8 - expense
 invest = income * 0.2
@@ -253,7 +245,7 @@ if show_categories:
         )
 
 # =========================
-# ADD TRANSACTIONS (UNCHANGED)
+# ADD TRANSACTIONS
 # =========================
 
 st.markdown("## ➕ Dodaj transakciju")
@@ -299,13 +291,16 @@ with colB:
             st.rerun()
 
 # =========================
-# TRANSACTIONS (UNCHANGED)
+# TRANSACTIONS (+ TOTAL)
 # =========================
 
 show = st.toggle("Prikaži transakcije")
 
 if show:
     st.markdown("## 📒 Transakcije")
+
+    filtered_total = sum(t["amount"] for t in current if t["type"] == "expense")
+    st.markdown(f"**Ukupno (filtrirano): {filtered_total:,.2f} RSD**")
 
     for t in current:
 
